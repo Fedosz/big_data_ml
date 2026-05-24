@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: bigdata_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: bigdata
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data/sql:/docker-entrypoint-initdb.d
+
+  minio:
+    image: minio/minio:latest
+    container_name: bigdata_minio
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: bigdata_jupyter
+    restart: always
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+
+  superset:
+    image: apache/superset:latest
+    container_name: bigdata_superset
+    restart: always
+    ports:
+      - "8088:8088"
+    environment:
+      SUPERSET_SECRET_KEY: "supersecretkey"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  minio_data:
