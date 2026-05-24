@@ -1,6 +1,6 @@
 # Big Data ML Homework
 
-Проект по Big Data и ML.
+Домашнее задание по Big Data и ML.
 
 ## Что сделано
 
